@@ -1,21 +1,22 @@
-import path from 'path';
-import webpack from 'webpack';
+import 'babel-polyfill';
+import Path from 'path';
+import Webpack from 'webpack';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
 
-const config: webpack.Configuration = {
-    mode: 'production',
+const config: Webpack.Configuration = {
+    mode: process.env.NODE_ENV.trim() as "development" | "production" | "none",
     entry: {
-        main:'./src/index.ts',
-        test:'./src/test.js'
+        main: [ 'babel-polyfill', './src/index.ts' ],
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: Path.resolve(__dirname, 'dist'),
         filename: '[name].[hash].js',
-        libraryTarget: 'global'
+        libraryTarget: 'global',
+        library: 'commonjs',
     },
     module: {
         rules: [
@@ -42,7 +43,7 @@ const config: webpack.Configuration = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            hmr: process.env.NODE_ENV === 'development',
+                            hmr: process.env.NODE_ENV.trim()  === 'development',
                         },
                     },
 
@@ -80,7 +81,7 @@ const config: webpack.Configuration = {
         ]
     },
     optimization: {
-        minimize: true,
+        minimize: process.env.NODE_ENV.trim() !== 'development',
         minimizer: [
             new UglifyJsPlugin({
                 test: /\.js$/i,
@@ -99,7 +100,7 @@ const config: webpack.Configuration = {
         ]
     },
     plugins: [
-        new webpack.ProgressPlugin(),
+        new Webpack.ProgressPlugin(),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({ template: './src/index.html' }),
 
@@ -109,15 +110,16 @@ const config: webpack.Configuration = {
             ignoreOrder: false,
         })
     ],
-    devtool: 'source-map',
+
+    devtool: process.env.NODE_ENV.trim() === 'development'?'source-map' : false,
 
     devServer: {
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: Path.join(__dirname, "dist"),
         compress: true,
         host: 'localhost',
         port: 8080,
         hot: true,
-        open: true,
+        open: false,
         writeToDisk: true,
     }
 };

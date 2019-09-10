@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "webpack-dev-server --mode development --inline --progress",
-    "build": "webpack --mode production --progress"
+    "debug": "set NODE_ENV=development && webpack-dev-server --mode development --inline --progress",
+    "build": "set NODE_ENV=production && webpack --mode production --progress"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +22,8 @@
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
@@ -35,12 +37,12 @@
     "tslint": "^5.19.0",
     "tslint-loader": "^3.5.4",
     "typescript": "^3.6.2",
-    "uglify-es": "^3.3.9",
-    "uglify-es-loader": "^3.0.4",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.8",
     "webpack-dev-server": "^3.8.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "axios": "^0.19.0"
+  }
 }
