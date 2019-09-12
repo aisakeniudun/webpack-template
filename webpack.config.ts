@@ -8,6 +8,7 @@ import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
 
 const config: Webpack.Configuration = {
+    
     mode: process.env.NODE_ENV.trim() as "development" | "production" | "none",
     entry: {
         main: [ 'babel-polyfill', './src/index.ts' ],
@@ -16,29 +17,46 @@ const config: Webpack.Configuration = {
         path: Path.resolve(__dirname, 'dist'),
         filename: '[name].[hash].js',
         libraryTarget: 'global',
-        library: 'commonjs',
+        // library: 'myLibrary',
+    },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
     module: {
         rules: [
             {
                 test: /\.(htm|html)$/,
+                exclude: /node_modules/,
                 use: [
                     'raw-loader'
                 ]
             },
             {
-                test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
+                test: /\.(m?js|ts|jsx)$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env']
+                        }
+                    },
+                    {
+                        loader: 'tslint-loader',
+                        options: {
+                            tsConfigFile: 'tsconfig.json',
+                            configFile: 'tslint.json',
+                            formatter: "json",
+                        }
+                    },
+                    { 
+                        loader: "ts-loader" 
                     }
-                }
+                ]
             },
-
             {
                 test: /\.(sass|scss|css)$/i,
+                exclude: /node_modules/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -56,27 +74,6 @@ const config: Webpack.Configuration = {
                     }
                     
                 ],
-            },
-
-            {
-                test: /\.ts$/,
-                enforce: 'pre',
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['@babel/preset-env']
-                        }
-                    },
-                    {
-                        loader: 'tslint-loader',
-                        options: {
-                            tsConfigFile: 'tsconfig.json',
-                            configFile: 'tslint.json',
-                            formatter: "json",
-                        }
-                    }
-                ]
             }
         ]
     },
@@ -99,11 +96,11 @@ const config: Webpack.Configuration = {
             })
         ]
     },
+    
     plugins: [
         new Webpack.ProgressPlugin(),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({ template: './src/index.html' }),
-
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[id].css',
